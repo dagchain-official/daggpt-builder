@@ -3,8 +3,6 @@ import { ClientOnly } from 'remix-utils/client-only';
 import { classNames } from '~/utils/classNames';
 import { PROVIDER_LIST } from '~/utils/constants';
 import { ModelSelector } from '~/components/chat/ModelSelector';
-import { APIKeyManager } from './APIKeyManager';
-import { LOCAL_PROVIDERS } from '~/lib/stores/settings';
 import FilePreview from './FilePreview';
 import { ScreenshotStateManager } from './ScreenshotStateManager';
 import { SendButton } from './SendButton.client';
@@ -119,17 +117,6 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
                 apiKeys={props.apiKeys}
                 modelLoading={props.isModelLoading}
               />
-              {(props.providerList || []).length > 0 &&
-                props.provider &&
-                !LOCAL_PROVIDERS.includes(props.provider.name) && (
-                  <APIKeyManager
-                    provider={props.provider}
-                    apiKey={props.apiKeys[props.provider.name] || ''}
-                    setApiKey={(key) => {
-                      props.onApiKeysChange(props.provider.name, key);
-                    }}
-                  />
-                )}
             </div>
           )}
         </ClientOnly>
@@ -238,7 +225,7 @@ export const ChatBox: React.FC<ChatBoxProps> = (props) => {
             minHeight: props.TEXTAREA_MIN_HEIGHT,
             maxHeight: props.TEXTAREA_MAX_HEIGHT,
           }}
-          placeholder={props.chatMode === 'build' ? 'How can Bolt help you today?' : 'What would you like to discuss?'}
+          placeholder={props.chatMode === 'build' ? 'What would you like to build?' : 'What would you like to discuss?'}
           translate="no"
         />
         <ClientOnly>

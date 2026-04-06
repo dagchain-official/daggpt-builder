@@ -5,6 +5,39 @@ import type { ModelInfo } from '~/lib/modules/llm/types';
 import { classNames } from '~/utils/classNames';
 import { LOCAL_PROVIDERS } from '~/lib/stores/settings';
 
+const getProviderFromModelName = (modelName: string): string => {
+  const name = modelName.toLowerCase();
+  if (name.includes('claude')) return 'Anthropic';
+  if (name.includes('gemini') || name.includes('gemma')) return 'Google';
+  if (name.includes('gpt') || name.includes('o1-') || name.includes('o3-') || name.includes('o4-')) return 'OpenAI';
+  if (name.includes('llama') || name.includes('meta-llama')) return 'Meta';
+  if (name.includes('deepseek')) return 'DeepSeek';
+  if (name.includes('mistral') || name.includes('mixtral') || name.includes('codestral')) return 'Mistral';
+  if (name.includes('grok')) return 'xAI';
+  if (name.includes('command')) return 'Cohere';
+  if (name.includes('qwen')) return 'Qwen';
+  if (name.includes('phi')) return 'Microsoft';
+  if (name.includes('nova')) return 'Amazon';
+  if (name.includes('perplexity') || name.includes('sonar')) return 'Perplexity';
+  return '';
+};
+
+
+const PROVIDER_COLORS: Record<string, string> = {
+  'Anthropic': '#D97706',
+  'Google': '#4285F4',
+  'OpenAI': '#10A37F',
+  'Meta': '#0668E1',
+  'DeepSeek': '#4F46E5',
+  'Mistral': '#FF7000',
+  'xAI': '#000',
+  'Cohere': '#39594D',
+  'Qwen': '#6F42C1',
+  'Microsoft': '#00BCF2',
+  'Amazon': '#FF9900',
+  'Perplexity': '#20808D',
+};
+
 // Fuzzy search utilities
 const levenshteinDistance = (str1: string, str2: string): number => {
   const matrix = [];
@@ -430,6 +463,16 @@ export const ModelSelector = ({
     }
   }, [providerList, provider, setProvider, modelList, setModel]);
 
+  // Auto-select OpenRouter if not already selected
+  useEffect(() => {
+    if (provider?.name !== 'OpenRouter') {
+      const openRouterProvider = providerList.find((p) => p.name === 'OpenRouter');
+      if (openRouterProvider && setProvider) {
+        setProvider(openRouterProvider);
+      }
+    }
+  }, [providerList]);
+
   if (providerList.length === 0) {
     return (
       <div className="mb-2 p-4 rounded-lg border border-bolt-elements-borderColor bg-bolt-elements-prompt-background text-bolt-elements-textPrimary">
@@ -443,8 +486,8 @@ export const ModelSelector = ({
 
   return (
     <div className="flex gap-2 flex-col sm:flex-row">
-      {/* Provider Combobox */}
-      <div className="relative flex w-full" onKeyDown={handleProviderKeyDown} ref={providerDropdownRef}>
+      {/* Provider dropdown hidden - auto-set to OpenRouter */}
+      <div className="hidden" ref={providerDropdownRef}>
         <div
           className={classNames(
             'w-full p-2 rounded-lg border border-bolt-elements-borderColor',
@@ -658,7 +701,26 @@ export const ModelSelector = ({
           tabIndex={0}
         >
           <div className="flex items-center justify-between">
-            <div className="truncate">{modelList.find((m) => m.name === model)?.label || 'Select model'}</div>
+            <div className="flex items-center gap-2 truncate">
+              {model && (() => {
+                const providerName = getProviderFromModelName(model);
+                const color = PROVIDER_COLORS[providerName] || '#737373';
+                return (
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-white" style={{ backgroundColor: color }}>
+                    {providerName ? providerName.substring(0, 2).toUpperCase() : '??'}
+                  </div>
+                );
+              })()}
+              <span className="truncate text-sm">
+                {(() => {
+                  const found = modelList.find((m) => m.name === model);
+                  if (!found) return 'Select model';
+                  // Clean up label - remove pricing info for compact display
+                  const cleanLabel = found.label.replace(/\s*-\s*in:\$[\d.]+.*$/, '');
+                  return cleanLabel;
+                })()}
+              </span>
+            </div>
             <div
               className={classNames(
                 'i-ph:caret-down w-4 h-4 text-bolt-elements-textSecondary opacity-75',
@@ -674,43 +736,7 @@ export const ModelSelector = ({
             role="listbox"
             id="model-listbox"
           >
-            <div className="px-2 pb-2 space-y-2">
-              {/* Free Models Filter Toggle - Only show for OpenRouter */}
-              {provider?.name === 'OpenRouter' && (
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowFreeModelsOnly(!showFreeModelsOnly);
-                    }}
-                    className={classNames(
-                      'flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium transition-all',
-                      'hover:bg-bolt-elements-background-depth-3',
-                      showFreeModelsOnly
-                        ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
-                        : 'bg-bolt-elements-background-depth-3 text-bolt-elements-textSecondary border border-bolt-elements-borderColor',
-                    )}
-                  >
-                    <span className="i-ph:gift text-xs" />
-                    Free models only
-                  </button>
-                  {showFreeModelsOnly && (
-                    <span className="text-xs text-bolt-elements-textTertiary">
-                      {filteredModels.length} free model{filteredModels.length !== 1 ? 's' : ''}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Search Result Count */}
-              {debouncedModelSearchQuery && filteredModels.length > 0 && (
-                <div className="text-xs text-bolt-elements-textTertiary px-1">
-                  {filteredModels.length} model{filteredModels.length !== 1 ? 's' : ''} found
-                  {filteredModels.length > 5 && ' (showing best matches)'}
-                </div>
-              )}
-
+            <div className="px-2 pb-2">
               {/* Search Input */}
               <div className="relative">
                 <input
@@ -828,33 +854,29 @@ export const ModelSelector = ({
                     tabIndex={focusedModelIndex === index ? 0 : -1}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex-1 min-w-0">
-                        <div className="truncate">
-                          <span
-                            dangerouslySetInnerHTML={{
-                              __html: (modelOption as any).highlightedLabel || modelOption.label,
-                            }}
-                          />
-                        </div>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span className="text-xs text-bolt-elements-textTertiary">
-                            {formatContextSize(modelOption.maxTokenAllowed)} tokens
-                          </span>
-                          {debouncedModelSearchQuery && (modelOption as any).searchScore > 70 && (
-                            <span className="text-xs text-green-500 font-medium">
-                              {(modelOption as any).searchScore.toFixed(0)}% match
-                            </span>
-                          )}
-                        </div>
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        {(() => {
+                          const provName = getProviderFromModelName(modelOption.name);
+                          const color = PROVIDER_COLORS[provName] || '#737373';
+                          return (
+                            <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-[8px] font-bold text-white" style={{ backgroundColor: color }}>
+                              {provName ? provName.substring(0, 2).toUpperCase() : '??'}
+                            </div>
+                          );
+                        })()}
+                        <span className="truncate text-sm">
+                          {(() => {
+                            // Clean label - remove pricing/context info
+                            const cleanLabel = modelOption.label.replace(/\s*-\s*in:\$[\d.]+.*$/, '');
+                            return debouncedModelSearchQuery
+                              ? <span dangerouslySetInnerHTML={{ __html: highlightText(cleanLabel, debouncedModelSearchQuery) }} />
+                              : cleanLabel;
+                          })()}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1 ml-2">
-                        {isModelLikelyFree(modelOption, provider?.name) && (
-                          <span className="i-ph:gift text-xs text-purple-400" title="Free model" />
-                        )}
-                        {model === modelOption.name && (
-                          <span className="i-ph:check text-xs text-green-500" title="Selected" />
-                        )}
-                      </div>
+                      {model === modelOption.name && (
+                        <span className="i-ph:check text-xs text-green-500 ml-2" title="Selected" />
+                      )}
                     </div>
                   </div>
                 ))

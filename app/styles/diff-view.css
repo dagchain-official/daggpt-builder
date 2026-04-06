@@ -31,42 +31,65 @@
   scrollbar-width: none;
 }
 
-/* Estilos para as linhas de diff */
+/* Diff block styles */
 .diff-block-added {
-  @apply bg-green-500/20 border-l-4 border-green-500;
+  background-color: rgba(34, 197, 94, 0.2);
+  border-left: 4px solid #22c55e;
 }
 
 .diff-block-removed {
-  @apply bg-red-500/20 border-l-4 border-red-500;
+  background-color: rgba(239, 68, 68, 0.2);
+  border-left: 4px solid #ef4444;
 }
 
-/* Melhorar contraste para mudanças */
+/* Hover enhancement */
 .diff-panel-content .group:hover .diff-block-added {
-  @apply bg-green-500/30;
+  background-color: rgba(34, 197, 94, 0.3);
 }
 
 .diff-panel-content .group:hover .diff-block-removed {
-  @apply bg-red-500/30;
+  background-color: rgba(239, 68, 68, 0.3);
 }
 
-/* Estilos unificados para ambas as visualizações */
+/* Unified styles for both views */
 .diff-line {
-  @apply flex group min-w-fit transition-colors duration-150;
+  display: flex;
+  min-width: fit-content;
+  transition: color 150ms ease;
 }
 
 .diff-line-number {
-  @apply w-12 shrink-0 pl-2 py-0.5 text-left font-mono text-bolt-elements-textTertiary border-r border-bolt-elements-borderColor bg-bolt-elements-background-depth-1;
+  width: 3rem;
+  flex-shrink: 0;
+  padding-left: 0.5rem;
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
+  text-align: left;
+  font-family: monospace;
+  color: var(--bolt-elements-textTertiary);
+  border-right: 1px solid var(--bolt-elements-borderColor);
+  background-color: var(--bolt-elements-bg-depth-1);
 }
 
 .diff-line-content {
-  @apply px-4 py-0.5 font-mono whitespace-pre flex-1 group-hover:bg-bolt-elements-background-depth-2 text-bolt-elements-textPrimary;
+  padding: 0.125rem 1rem;
+  font-family: monospace;
+  white-space: pre;
+  flex: 1;
+  color: var(--bolt-elements-textPrimary);
 }
 
-/* Cores específicas para adições/remoções */
+.diff-line:hover .diff-line-content {
+  background-color: var(--bolt-elements-bg-depth-2);
+}
+
+/* Addition/Removal colors */
 .diff-added {
-  @apply bg-green-500/20 border-l-4 border-green-500;
+  background-color: rgba(34, 197, 94, 0.2);
+  border-left: 4px solid #22c55e;
 }
 
 .diff-removed {
-  @apply bg-red-500/20 border-l-4 border-red-500;
+  background-color: rgba(239, 68, 68, 0.2);
+  border-left: 4px solid #ef4444;
 }

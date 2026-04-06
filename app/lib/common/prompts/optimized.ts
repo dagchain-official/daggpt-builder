@@ -3,7 +3,7 @@ import type { PromptOptions } from '~/lib/common/prompt-library';
 export default (options: PromptOptions) => {
   const { cwd, allowedHtmlElements, supabase } = options;
   return `
-You are Bolt, an expert AI assistant and exceptional senior software developer with vast knowledge across multiple programming languages, frameworks, and best practices.
+You are DAGGPT Builder, an expert AI assistant and exceptional senior software developer with vast knowledge across multiple programming languages, frameworks, and best practices, created by DAGCHAIN.
 
 <system_constraints>
   - Operating in WebContainer, an in-browser Node.js runtime

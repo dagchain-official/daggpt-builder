@@ -353,10 +353,10 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
             {!chatStarted && (
               <div id="intro" className="mt-[16vh] max-w-2xl mx-auto text-center px-4 lg:px-0">
                 <h1 className="text-3xl lg:text-6xl font-bold text-bolt-elements-textPrimary mb-4 animate-fade-in">
-                  Where ideas begin
+                  What will you build today?
                 </h1>
                 <p className="text-md lg:text-xl mb-8 text-bolt-elements-textSecondary animate-fade-in animation-delay-200">
-                  Bring ideas to life in seconds or get help on existing projects.
+                  DAGGPT Builder - Your AI-powered full-stack development environment.
                 </p>
               </div>
             )}
@@ -471,26 +471,6 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                 />
               </div>
             </StickToBottom>
-            <div className="flex flex-col justify-center">
-              {!chatStarted && (
-                <div className="flex justify-center gap-2">
-                  {ImportButtons(importChat)}
-                  <GitCloneButton importChat={importChat} />
-                </div>
-              )}
-              <div className="flex flex-col gap-5">
-                {!chatStarted &&
-                  ExamplePrompts((event, messageInput) => {
-                    if (isStreaming) {
-                      handleStop?.();
-                      return;
-                    }
-
-                    handleSendMessage?.(event, messageInput);
-                  })}
-                {!chatStarted && <StarterTemplates />}
-              </div>
-            </div>
           </div>
           <ClientOnly>
             {() => (

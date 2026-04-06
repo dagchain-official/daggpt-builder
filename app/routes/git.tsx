@@ -7,7 +7,7 @@ import { Header } from '~/components/header/Header';
 import BackgroundRays from '~/components/ui/BackgroundRays';
 
 export const meta: MetaFunction = () => {
-  return [{ title: 'Bolt' }, { name: 'description', content: 'Talk with Bolt, an AI assistant from StackBlitz' }];
+  return [{ title: 'DAGGPT Builder' }, { name: 'description', content: 'Build full-stack web applications with AI — powered by DAGGPT' }];
 };
 
 export async function loader(args: LoaderFunctionArgs) {

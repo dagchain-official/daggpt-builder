@@ -16,8 +16,8 @@ let commitJson = {
 
 console.log(`
 ★═══════════════════════════════════════★
-          B O L T . D I Y
-         ⚡️  Welcome  ⚡️
+       D A G G P T   B U I L D E R
+         🚀  Ready to launch  🚀
 ★═══════════════════════════════════════★
 `);
 console.log('📍 Current Version Tag:', `v${commitJson.version}`);

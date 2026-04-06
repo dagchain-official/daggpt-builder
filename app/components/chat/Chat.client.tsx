@@ -323,10 +323,11 @@ export const ChatImpl = memo(
         return;
       }
 
-      await Promise.all([
-        animate('#examples', { opacity: 0, display: 'none' }, { duration: 0.1 }),
-        animate('#intro', { opacity: 0, flex: 1 }, { duration: 0.2, ease: cubicEasingFn }),
-      ]);
+      try {
+        await animate('#intro', { opacity: 0, flex: 1 }, { duration: 0.2, ease: cubicEasingFn });
+      } catch {
+        // Element may not exist, continue anyway
+      }
 
       chatStore.setKey('started', true);
 

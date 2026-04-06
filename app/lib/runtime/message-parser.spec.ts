@@ -29,7 +29,7 @@ describe('StreamingMessageParser', () => {
       ['Foo bar <', 'Foo bar '],
       ['Foo bar <p', 'Foo bar <p'],
       [['Foo bar <', 's', 'p', 'an>some text</span>'], 'Foo bar <span>some text</span>'],
-    ])('should correctly parse chunks and strip out bolt artifacts (%#)', (input, expected) => {
+    ])('should correctly parse chunks and strip out DAGGPT artifacts (%#)', (input, expected) => {
       runTest(input, expected);
     });
   });
@@ -45,7 +45,7 @@ describe('StreamingMessageParser', () => {
       ['Foo bar <boltArtifacs></boltArtifact>', 'Foo bar <boltArtifacs></boltArtifact>'],
       ['Before <oltArtfiact>foo</boltArtifact> After', 'Before <oltArtfiact>foo</boltArtifact> After'],
       ['Before <boltArtifactt>foo</boltArtifact> After', 'Before <boltArtifactt>foo</boltArtifact> After'],
-    ])('should correctly parse chunks and strip out bolt artifacts (%#)', (input, expected) => {
+    ])('should correctly parse chunks and strip out DAGGPT artifacts (%#)', (input, expected) => {
       runTest(input, expected);
     });
   });
@@ -132,7 +132,7 @@ describe('StreamingMessageParser', () => {
           callbacks: { onArtifactOpen: 1, onArtifactClose: 1, onActionOpen: 0, onActionClose: 0 },
         },
       ],
-    ])('should correctly parse chunks and strip out bolt artifacts (%#)', (input, expected) => {
+    ])('should correctly parse chunks and strip out DAGGPT artifacts (%#)', (input, expected) => {
       runTest(input, expected);
     });
   });
@@ -153,7 +153,7 @@ describe('StreamingMessageParser', () => {
           callbacks: { onArtifactOpen: 1, onArtifactClose: 1, onActionOpen: 2, onActionClose: 2 },
         },
       ],
-    ])('should correctly parse chunks and strip out bolt artifacts (%#)', (input, expected) => {
+    ])('should correctly parse chunks and strip out DAGGPT artifacts (%#)', (input, expected) => {
       runTest(input, expected);
     });
   });
