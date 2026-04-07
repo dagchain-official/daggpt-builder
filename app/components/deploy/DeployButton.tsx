@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useStore } from '@nanostores/react';
 import { netlifyConnection } from '~/lib/stores/netlify';
@@ -15,6 +16,7 @@ import { useGitHubDeploy } from '~/components/deploy/GitHubDeploy.client';
 import { useGitLabDeploy } from '~/components/deploy/GitLabDeploy.client';
 import { GitHubDeploymentDialog } from '~/components/deploy/GitHubDeploymentDialog';
 import { GitLabDeploymentDialog } from '~/components/deploy/GitLabDeploymentDialog';
+import { useSharePreview } from '~/components/deploy/SharePreview.client';
 
 interface DeployButtonProps {
   onVercelDeploy?: () => Promise<void>;
@@ -42,12 +44,22 @@ export const DeployButton = ({
   const { handleNetlifyDeploy } = useNetlifyDeploy();
   const { handleGitHubDeploy } = useGitHubDeploy();
   const { handleGitLabDeploy } = useGitLabDeploy();
+  const { isSharing, previewUrl, handleSharePreview } = useSharePreview();
+  const [showShareDialog, setShowShareDialog] = useState(false);
   const [showGitHubDeploymentDialog, setShowGitHubDeploymentDialog] = useState(false);
   const [showGitLabDeploymentDialog, setShowGitLabDeploymentDialog] = useState(false);
   const [githubDeploymentFiles, setGithubDeploymentFiles] = useState<Record<string, string> | null>(null);
   const [gitlabDeploymentFiles, setGitlabDeploymentFiles] = useState<Record<string, string> | null>(null);
   const [githubProjectName, setGithubProjectName] = useState('');
   const [gitlabProjectName, setGitlabProjectName] = useState('');
+
+  const handleShareClick = async () => {
+    const url = await handleSharePreview();
+
+    if (url) {
+      setShowShareDialog(true);
+    }
+  };
 
   const handleVercelDeployClick = async () => {
     setIsDeploying(true);
@@ -148,6 +160,25 @@ export const DeployButton = ({
             sideOffset={5}
             align="end"
           >
+            {/* Share Preview — top of the list */}
+            <DropdownMenu.Item
+              className={classNames(
+                'cursor-pointer flex items-center w-full px-4 py-2 text-sm text-bolt-elements-textPrimary hover:bg-bolt-elements-item-backgroundActive gap-2 rounded-md group relative',
+                {
+                  'opacity-60 cursor-not-allowed': isDeploying || isSharing || !activePreview || isStreaming,
+                },
+              )}
+              disabled={isDeploying || isSharing || !activePreview || isStreaming}
+              onClick={handleShareClick}
+            >
+              <div className="i-ph:share-network w-5 h-5 text-purple-500" />
+              <span className="mx-auto font-medium">
+                {isSharing ? 'Creating preview...' : '✨ Share Preview Link'}
+              </span>
+            </DropdownMenu.Item>
+
+            <DropdownMenu.Separator className="my-1 h-px bg-bolt-elements-borderColor" />
+
             <DropdownMenu.Item
               className={classNames(
                 'cursor-pointer flex items-center w-full px-4 py-2 text-sm text-bolt-elements-textPrimary hover:bg-bolt-elements-item-backgroundActive gap-2 rounded-md group relative',
@@ -261,6 +292,52 @@ export const DeployButton = ({
           projectName={githubProjectName}
           files={githubDeploymentFiles}
         />
+      )}
+
+      {/* Share Preview URL Dialog */}
+      {showShareDialog && previewUrl && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-[#1a1a2e] rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 max-w-md w-full mx-4">
+            <div className="text-center mb-4">
+              <div className="i-ph:rocket-launch w-12 h-12 mx-auto text-purple-500 mb-3" />
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Preview is Live!</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Share this link with anyone</p>
+            </div>
+            <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-4">
+              <input
+                type="text"
+                readOnly
+                value={previewUrl}
+                className="flex-1 bg-transparent text-sm text-gray-800 dark:text-gray-200 outline-none font-mono"
+              />
+              <button
+                className="px-3 py-1.5 bg-purple-500 text-white text-xs font-medium rounded-md hover:bg-purple-600 transition-colors"
+                onClick={() => {
+                  navigator.clipboard.writeText(previewUrl);
+                  toast.success('Link copied!');
+                }}
+              >
+                Copy
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <a
+                href={previewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 text-center px-4 py-2 bg-purple-500 text-white text-sm font-medium rounded-lg hover:bg-purple-600 transition-colors"
+              >
+                Open Preview
+              </a>
+              <button
+                className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                onClick={() => setShowShareDialog(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* GitLab Deployment Dialog */}
