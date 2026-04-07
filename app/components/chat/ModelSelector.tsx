@@ -7,18 +7,55 @@ import { LOCAL_PROVIDERS } from '~/lib/stores/settings';
 
 const getProviderFromModelName = (modelName: string): string => {
   const name = modelName.toLowerCase();
-  if (name.includes('claude')) return 'Anthropic';
-  if (name.includes('gemini') || name.includes('gemma')) return 'Google';
-  if (name.includes('gpt') || name.includes('o1-') || name.includes('o3-') || name.includes('o4-')) return 'OpenAI';
-  if (name.includes('llama') || name.includes('meta-llama')) return 'Meta';
-  if (name.includes('deepseek')) return 'DeepSeek';
-  if (name.includes('mistral') || name.includes('mixtral') || name.includes('codestral')) return 'Mistral';
-  if (name.includes('grok')) return 'xAI';
-  if (name.includes('command')) return 'Cohere';
-  if (name.includes('qwen')) return 'Qwen';
-  if (name.includes('phi')) return 'Microsoft';
-  if (name.includes('nova')) return 'Amazon';
-  if (name.includes('perplexity') || name.includes('sonar')) return 'Perplexity';
+
+  if (name.includes('claude')) {
+    return 'Anthropic';
+  }
+
+  if (name.includes('gemini') || name.includes('gemma')) {
+    return 'Google';
+  }
+
+  if (name.includes('gpt') || name.includes('o1-') || name.includes('o3-') || name.includes('o4-')) {
+    return 'OpenAI';
+  }
+
+  if (name.includes('llama') || name.includes('meta-llama')) {
+    return 'Meta';
+  }
+
+  if (name.includes('deepseek')) {
+    return 'DeepSeek';
+  }
+
+  if (name.includes('mistral') || name.includes('mixtral') || name.includes('codestral')) {
+    return 'Mistral';
+  }
+
+  if (name.includes('grok')) {
+    return 'xAI';
+  }
+
+  if (name.includes('command')) {
+    return 'Cohere';
+  }
+
+  if (name.includes('qwen')) {
+    return 'Qwen';
+  }
+
+  if (name.includes('phi')) {
+    return 'Microsoft';
+  }
+
+  if (name.includes('nova')) {
+    return 'Amazon';
+  }
+
+  if (name.includes('perplexity') || name.includes('sonar')) {
+    return 'Perplexity';
+  }
+
   return '';
 };
 

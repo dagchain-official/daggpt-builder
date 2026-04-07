@@ -122,9 +122,7 @@ export const AvatarDropdown = ({ onSelectTab }: AvatarDropdownProps) => {
               'outline-none',
               'group',
             )}
-            onClick={() =>
-              window.open('https://github.com/dagchain-official/daggpt-builder/issues/new', '_blank')
-            }
+            onClick={() => window.open('https://github.com/dagchain-official/daggpt-builder/issues/new', '_blank')}
           >
             <div className="i-ph:bug w-4 h-4 text-gray-400 group-hover:text-purple-500 dark:group-hover:text-purple-400 transition-colors" />
             Report Bug
